@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alexander Brodilin</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -68,6 +69,19 @@
         a:hover {
             text-decoration: underline;
         }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .social-icons a {
+            color: #fff;
+            font-size: 1.5rem;
+        }
+        .social-icons a:hover {
+            color: #007acc;
+        }
     </style>
 </head>
 <body>
@@ -103,9 +117,9 @@
 
     <footer>
         <p>Feel free to connect with me on:</p>
-        <ul>
-            <li><a href="https://www.linkedin.com/in/thealexbrodilin/" target="_blank">LinkedIn</a></li>
-        </ul>
+        <div class="social-icons">
+            <a href="https://www.linkedin.com/in/thealexbrodilin/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        </div>
         <p>© 2025 Alexander Brodilin. All rights reserved.</p>
     </footer>
 </body>
