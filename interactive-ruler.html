@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive 150cm Ruler with Different Colored Markers (Snapping)</title>
+  <style>
+    canvas {
+      border: 1px solid #ccc;
+      cursor: crosshair;
+    }
+    .marker {
+      position: absolute;
+      width: 10px;
+      height: 20px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    #marker1 {
+      background-color: red;  /* Red Marker */
+    }
+    #marker2 {
+      background-color: blue;  /* Blue Marker */
+    }
+    .output {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="rulerCanvas" width="900" height="100"></canvas>
+  
+  <div id="marker1" class="marker" style="left: 100px; top: 60px;"></div>
+  <div id="marker2" class="marker" style="left: 400px; top: 60px;"></div>
+
+  <div class="output">
+    <p>Маркёр 1 Позиция: <span id="position1" style="color: red;">100</span> см</p>
+    <p>Маркёр 2 Позиция: <span id="position2" style="color: blue;">400</span> см</p>
+  </div>
+
+  <script>
+    // Draw Ruler (150 cm scale)
+    const canvas = document.getElementById('rulerCanvas');
+    const ctx = canvas.getContext('2d');
+    const rulerWidth = canvas.width;
+    const rulerHeight = canvas.height;
+    
+    const cmToPixels = rulerWidth / 150; // Convert cm to pixels (150 cm total)
+    const mmToPixels = cmToPixels / 10;  // 1 mm = 1/10 of a cm
+    
+    function drawRuler() {
+      const majorTickInterval = 10 * cmToPixels; // 10 cm for major ticks
+      const minorTickInterval = cmToPixels; // 1 cm for minor ticks
+
+      ctx.clearRect(0, 0, rulerWidth, rulerHeight);
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 1;
+      ctx.font = '12px Arial';
+      
+      // Draw the ticks and labels
+      for (let x = 0; x <= rulerWidth; x += minorTickInterval) {
+        let tickHeight = 10;
+        if (x % majorTickInterval === 0) {
+          tickHeight = 20;
+          ctx.fillText((x / cmToPixels).toFixed(0), x - 5, 35); // Add labels every 10 cm
+        }
+        ctx.beginPath();
+        ctx.moveTo(x, rulerHeight - tickHeight);
+        ctx.lineTo(x, rulerHeight);
+        ctx.stroke();
+      }
+    }
+
+    drawRuler();
+
+    // Marker Movement Logic
+    const marker1 = document.getElementById('marker1');
+    const marker2 = document.getElementById('marker2');
+    const position1 = document.getElementById('position1');
+    const position2 = document.getElementById('position2');
+
+    let isDragging = false;
+    let draggedMarker = null;
+
+    function startDrag(marker) {
+      isDragging = true;
+      draggedMarker = marker;
+    }
+
+    function stopDrag() {
+      isDragging = false;
+      draggedMarker = null;
+    }
+
+    function moveMarker(e) {
+      if (isDragging) {
+        const canvasRect = canvas.getBoundingClientRect();
+        let newLeft = e.clientX - canvasRect.left - draggedMarker.offsetWidth / 2;
+
+        // Snap the position to the nearest 1 mm
+        newLeft = Math.max(0, Math.min(newLeft, rulerWidth - draggedMarker.offsetWidth));
+        const snappedPosition = Math.round(newLeft / mmToPixels) * mmToPixels;
+
+        // Update the position of the dragged marker
+        draggedMarker.style.left = `${snappedPosition}px`;
+
+        // Update the output text for the marker's position in cm
+        const positionInCm = (snappedPosition / cmToPixels).toFixed(2); // Convert from pixels to cm
+        if (draggedMarker === marker1) {
+          position1.textContent = positionInCm;
+          position1.style.color = 'red'; // Set text color to match marker
+        } else if (draggedMarker === marker2) {
+          position2.textContent = positionInCm;
+          position2.style.color = 'blue'; // Set text color to match marker
+        }
+      }
+    }
+
+    // Attach mouse events to markers
+    marker1.addEventListener('mousedown', () => startDrag(marker1));
+    marker2.addEventListener('mousedown', () => startDrag(marker2));
+    document.addEventListener('mousemove', moveMarker);
+    document.addEventListener('mouseup', stopDrag);
+
+  </script>
+</body>
+</html>
